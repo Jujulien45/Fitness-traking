@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Systeme-mutli-langages", "Systeme-mutli-langages\Systeme-mutli-langages.csproj", "{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
