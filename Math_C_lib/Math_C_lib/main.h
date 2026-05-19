@@ -41,7 +41,7 @@ int DLL_EXPORT bmi_category(const float bmi);
 
 float DLL_EXPORT kCal_burned(const float weight_kg, const float met_per_hour, const float duration_min);
 
-Activity DLL_EXPORT activity(int type_id);
+void DLL_EXPORT activity(int type_id, Activity* out);
 
 float DLL_EXPORT met_for_activity(int type_id, float intensity);
 
