@@ -1,0 +1,155 @@
+import ctypes
+from typing import Callable
+
+math_lib: ctypes.CDLL = ctypes.CDLL("Math_C_lib/Math_C_lib/bin/Debug/Math C lib.dll")
+
+
+"""
+ctypes cheat sheet
+c_int           int      int
+c_double        double   float
+c_char_p        char*    bytes
+c_void_p        void*    int/None
+c_bool          bool     bool
+POINTER(c_int)  int*     ctypes pointer
+"""
+
+
+# ctypes structures
+class Activity(ctypes.Structure):
+    _fields_ = [
+        ("activity_id", ctypes.c_int),
+        ("met", ctypes.c_float),
+        ("name", ctypes.c_char_p)
+    ]
+
+def activity_str(activity: Activity):
+    return f"activity_id: {activity.activity_id}; met: {activity.met}; name: {activity.name}"
+
+
+# Math C lib constants
+BMI_ERROR: int = -1
+ACTIVITY_ID_ERROR: float = -1.0
+ACTIVITY_NAME_ERROR: str = ""
+ACTIVITY_ERROR: Activity = Activity(-1, -1.0, b"")
+
+# ctypes CDLL arg types
+math_lib.under_weight.argtypes = []
+math_lib.under_weight.restype = ctypes.c_int
+
+math_lib.normal_weight.argtypes = []
+math_lib.normal_weight.restype = ctypes.c_int
+
+math_lib.over_weight.argtypes = []
+math_lib.over_weight.restype = ctypes.c_int
+
+math_lib.obese_weight.argtypes = []
+math_lib.obese_weight.restype = ctypes.c_int
+
+
+
+math_lib.calc_bmi.argtypes = [ctypes.c_float, ctypes.c_float]
+math_lib.calc_bmi.restype =  ctypes.c_float
+
+math_lib.bmi_category.argtypes = [ctypes.c_float]
+math_lib.bmi_category.restype =  ctypes.c_int
+
+math_lib.kCal_burned.argtypes = [ctypes.c_float, ctypes.c_float, ctypes.c_float]
+math_lib.kCal_burned.restype =  ctypes.c_float
+
+math_lib.met_for_activity.argtypes = [ctypes.c_int, ctypes.c_float]
+math_lib.met_for_activity.restype =  ctypes.c_float
+
+math_lib.name_for_activity.argtypes = [ctypes.c_int]
+math_lib.name_for_activity.restype =  ctypes.c_char_p
+
+math_lib.met_for_activity_batch.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+math_lib.met_for_activity_batch.restype =  None
+
+math_lib.bmi_batch.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+math_lib.bmi_batch.restype =  None
+
+math_lib.calories_batch.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+math_lib.calories_batch.restype =  None
+
+math_lib.calories_intensities_batch.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+math_lib.calories_intensities_batch.restype =  None
+
+math_lib.activity.argtypes = [ctypes.c_int, ctypes.POINTER(Activity)]
+math_lib.activity.restype = None
+
+
+
+# warpers to lint the types #
+under_weight: int = math_lib.under_weight()
+normal_weight: int = math_lib.normal_weight()
+over_weight: int = math_lib.over_weight()
+obese_weight: int = math_lib.obese_weight()
+
+
+def calc_bmi(weight_kg: float, height_m: float) -> float:
+    return math_lib.calc_bmi(weight_kg, height_m)
+
+def bmi_category(bmi: float) -> int: 
+    bmi_category: int = math_lib.bmi_category(bmi)
+    if bmi_category == BMI_ERROR:
+        raise ValueError(f"bmi value({bmi}) has to be positive.")
+    return bmi_category
+
+def kCal_burned(weight_kg: float, met_per_hour: float, duration_min: int) -> float:
+    return math_lib.kCal_burned(weight_kg, met_per_hour, duration_min)
+
+def met_for_activity(type_id: int, intensity: float) -> float:
+    activity_met: float = math_lib.met_for_activity(type_id, intensity)
+    if activity_met == ACTIVITY_ID_ERROR:
+        raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
+    return activity_met
+
+def name_for_activity(type_id: int) -> str:
+    activity_name: str = math_lib.name_for_activity(type_id)
+    if activity_name == ACTIVITY_NAME_ERROR:
+        raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
+    return activity_name
+
+def activity(type_id: int) -> Activity:
+    out: Activity = Activity()
+    math_lib.activity(type_id, ctypes.byref(out))
+    if out == ACTIVITY_ERROR:
+        raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
+    return out
+
+
+def met_for_activity_batch(type_ids: list[int], intensities: list[float]) -> list[float]:
+    n: int = min(len(type_ids), len(intensities))
+    type_ids_arr = (ctypes.c_int * len(type_ids))(*type_ids)
+    intensities_arr = (ctypes.c_float * len(intensities))(*intensities)
+    out_arr = (ctypes.c_float * n)()
+    math_lib.met_for_activity_batch(type_ids_arr, intensities_arr, out_arr, n)
+    return list(out_arr)
+
+def calories_batch(weights_kg: list[float], mets_per_hour: list[float], durations_min: list[int]) -> list[float]:
+    n: int = min(len(weights_kg), len(mets_per_hour))
+    weights_kg_arr = (ctypes.c_float * len(weights_kg))(*weights_kg)
+    mets_per_hour_arr = (ctypes.c_float * len(mets_per_hour))(*mets_per_hour)
+    durations_min_arr = (ctypes.c_float * len(durations_min))(*durations_min)
+    out_arr = (ctypes.c_float * n)()
+    math_lib.calories_batch(weights_kg_arr, mets_per_hour_arr, durations_min_arr, out_arr, n)
+    return list(out_arr)
+
+def bmi_batch(weights_kg: list[float], heights_m: list[float]) -> list[float]:
+    n: int = min(len(weights_kg), len(heights_m))
+    weights_kg_arr = (ctypes.c_float * len(weights_kg))(*weights_kg)
+    heights_m_arr = (ctypes.c_float * len(heights_m))(*heights_m)
+    out_arr = (ctypes.c_float * n)()
+    math_lib.bmi_batch(weights_kg_arr, heights_m_arr, out_arr, n)
+    return list(out_arr)
+
+def calories_intensities_batch(weights_kg: list[float], default_mets_per_hour: list[float], durations_min: list[int], intensities: list[float]) -> list[float]:
+    n: int = min(len(weights_kg), len(default_mets_per_hour))
+    weights_kg_arr = (ctypes.c_float * len(weights_kg))(*weights_kg)
+    default_mets_per_hour_arr = (ctypes.c_float * len(default_mets_per_hour))(*default_mets_per_hour)
+    durations_min_arr = (ctypes.c_float * len(durations_min))(*durations_min)
+    intensities_arr = (ctypes.c_float * len(intensities))(*intensities)
+    out_arr = (ctypes.c_float * n)()
+    math_lib.calories_intensities_batch(weights_kg_arr, default_mets_per_hour_arr, durations_min_arr, intensities_arr, out_arr, n)
+    return list(out_arr)
