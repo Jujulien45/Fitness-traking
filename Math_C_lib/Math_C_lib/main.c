@@ -162,7 +162,7 @@ float DLL_EXPORT kCal_burned(const float weight_kg, const float met_per_hour, co
 }
 
 
-void DLL_EXPORT activity(int type_id, Activity* out)
+void DLL_EXPORT activity(int type_id, Activity *out)
 {
     if (type_id > ACTIVITY_COUNT || type_id <= 0) *out = ACTIVITY_ERROR;
     *out = ACTIVITIES[type_id - 1];
