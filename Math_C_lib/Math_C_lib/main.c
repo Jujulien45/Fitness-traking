@@ -1,29 +1,20 @@
 #include "main.h"
 
 
-/* structs */
-typedef struct
-{
-    int activity_id;
-    float met;
-    const char* name;
-} Activity;
-
-
 /* constants */
-static const int BMI_ERROR = -1;
-
-static const float OBESE_THRESHOLD = 30.0f;
-static const float OVER_THRESHOLD = 25.0f;
-static const float NORMAL_THRESHOLD = 18.5f;
-static const float UNDER_THRESHOLD = 0.0f;
+#define OBESE_THRESHOLD 30.0f
+#define OVER_THRESHOLD 25.0f
+#define NORMAL_THRESHOLD 18.5f
+#define UNDER_THRESHOLD 0.0f
 
 
-static const float ACTIVITY_ID_ERROR = -1.0f;
-static const char* ACTIVITY_NAME_ERROR = "";
+#define BMI_ERROR -1
+#define ACTIVITY_ID_ERROR -1.0f
+#define ACTIVITY_NAME_ERROR ""
 static const Activity ACTIVITY_ERROR = {-1,   -1.0f,  ""};
-static const int ACTIVITY_COUNT = 100;
-const Activity ACTIVITIES[] =
+
+#define ACTIVITY_COUNT 100
+static const Activity ACTIVITIES[] =
 {
     {1,   0.9f,  "sleeping"},
     {2,   1.0f,  "lying awake"},
@@ -128,10 +119,10 @@ const Activity ACTIVITIES[] =
 };
 
 
-static const int UNDER_WEIGHT = 0;
-static const int NORMAL_WEIGHT = 1;
-static const int OVER_WEIGHT = 2;
-static const int OBESE_WEIGHT = 3;
+#define UNDER_WEIGHT 0
+#define NORMAL_WEIGHT 1
+#define OVER_WEIGHT 2
+#define OBESE_WEIGHT 3
 
 
 /* constants exports */
@@ -174,7 +165,7 @@ float DLL_EXPORT kCal_burned(const float weight_kg, const float met_per_hour, co
 Activity DLL_EXPORT activity(int type_id)
 {
     if (type_id > ACTIVITY_COUNT || type_id <= 0) return ACTIVITY_ERROR;
-    return ACTIVITIES[type_id + 1];
+    return ACTIVITIES[type_id - 1];
 }
 
 

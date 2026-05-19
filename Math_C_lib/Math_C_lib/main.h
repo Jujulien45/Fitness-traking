@@ -19,6 +19,15 @@ extern "C"
 {
 #endif
 
+
+typedef struct activity
+{
+    int activity_id;
+    float met;
+    const char* name;
+} Activity;
+
+
 /* constants exports */
 int DLL_EXPORT under_weight();
 int DLL_EXPORT normal_weight();
@@ -31,6 +40,8 @@ float DLL_EXPORT calc_bmi(const float weight_kg, const float height_m);
 int DLL_EXPORT bmi_category(const float bmi);
 
 float DLL_EXPORT kCal_burned(const float weight_kg, const float met_per_hour, const float duration_min);
+
+Activity DLL_EXPORT activity(int type_id);
 
 float DLL_EXPORT met_for_activity(int type_id, float intensity);
 

@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1779214521 source:c:\users\julie\desktop\repos\fitness-traking\math_c_lib\math_c_lib\main.c
+	"main.h"
+
+1779224410 c:\users\julie\desktop\repos\fitness-traking\math_c_lib\math_c_lib\main.h
+	<windows.h>
+
