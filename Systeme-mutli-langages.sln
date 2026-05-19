@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Systeme-mutli-langages", "Systeme-mutli-langages\Systeme-mutli-langages.csproj", "{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF4911A-925F-4F3A-8F03-F97F07A7E67F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
