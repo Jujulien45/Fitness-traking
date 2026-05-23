@@ -1,18 +1,7 @@
 import ctypes
-from typing import Callable
 
 math_lib: ctypes.CDLL = ctypes.CDLL("Math_C_lib/Math_C_lib/bin/Debug/Math C lib.dll")
 
-
-"""
-ctypes cheat sheet
-c_int           int      int
-c_double        double   float
-c_char_p        char*    bytes
-c_void_p        void*    int/None
-c_bool          bool     bool
-POINTER(c_int)  int*     ctypes pointer
-"""
 
 
 # ctypes structures
