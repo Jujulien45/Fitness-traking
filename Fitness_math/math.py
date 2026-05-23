@@ -15,7 +15,7 @@ class Activity(ctypes.Structure):
     ]
 
 def activity_str(activity: Activity):
-    """generates an str for the Activity class to be printed.
+    """generates a str for the Activity class to be printed.
     format: f"activity_id: ...; met: ...; name: ..."
     """
     return f"activity_id: {activity.activity_id}; met: {activity.met}; name: {activity.name}"
@@ -85,8 +85,8 @@ over_weight: int = math_lib.over_weight()
 obese_weight: int = math_lib.obese_weight()
 
 
-def calc_bmi(weight_kg: float, height_m: float) -> float:
-    """Calculates the bmi of somone.
+def calc_bmi(weight_kg: float | int, height_m: float | int) -> float | int:
+    """Calculates the bmi of someone.
     
     :param weight_kg: the weight of the person in kilograms.
     :param height_m: the height of the person in meters.
@@ -94,8 +94,8 @@ def calc_bmi(weight_kg: float, height_m: float) -> float:
     """
     return math_lib.calc_bmi(weight_kg, height_m)
 
-def bmi_category(bmi: float) -> int:
-    """Calculates the bmi category of somone.
+def bmi_category(bmi: float | int) -> int:
+    """Calculates the bmi category of someone.
     
     :param bmi: The bmi of the person in kg/m².
     :returns: The bmi category, BMI_ERROR (-1) if an input is wrong,
@@ -109,24 +109,24 @@ def bmi_category(bmi: float) -> int:
         raise ValueError(f"bmi value({bmi}) has to be positive.")
     return bmi_category
 
-def kCal_burned(weight_kg: float, met_per_hour: float, duration_min: int) -> float:
+def kCal_burned(weight_kg: float | int, met_per_hour: float | int, duration_min: int) -> float | int:
     """Estimates the kilo calories burned after doing an activity.
 
     :param weight_kg: The weight of the person doing the activity in kilograms.
     :param met_per_hour: The calories burned per hour doing this activity in MET/h.
-    :param duration_min: The durration of the activity in minutes.
+    :param duration_min: The duration of the activity in minutes.
     :returns: The calories burned doing that activity in kCal.
     """
     return math_lib.kCal_burned(weight_kg, met_per_hour, duration_min)
 
-def met_for_activity(type_id: int, intensity: float = 1) -> float:
+def met_for_activity(type_id: int, intensity: float | int = 1) -> float | int:
     """Gets the MET/h value for an activity.
 
     :param type_id: The id of the activity.
-    :param instensitiy: The intensity at which the activity was done, defaults to one.
+    :param intensity: The intensity at which the activity was done, defaults to one.
     :returns: The met for the activity times the intensity, ACTIVITY_ID_ERROR (-1.0) if the type_id is out of range.
     """
-    activity_met: float = math_lib.met_for_activity(type_id, intensity)
+    activity_met: float | int = math_lib.met_for_activity(type_id, intensity)
     if activity_met == ACTIVITY_ID_ERROR:
         raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
     return activity_met
@@ -155,12 +155,14 @@ def activity(type_id: int) -> Activity:
     return out
 
 
-def met_for_activity_batch(type_ids: list[int], intensities: list[float] = []) -> list[float]:
+def met_for_activity_batch(
+        type_ids: list[int],
+        intensities: list[float | int] = []) -> list[float]:
     """Gets the MET/h values for a batch of activities.
 
     :param type_ids: The ids of the activities.
-    :param instensities: The intensites at which the activites were done, defaults to one.
-    :returns: The mets for the activites times the intensites, ACTIVITY_ID_ERROR (-1.0) if the type_id is out of range.
+    :param intensities: The intensities at which the activities were done, defaults to one.
+    :returns: The mets for the activities times the intensities, ACTIVITY_ID_ERROR (-1.0) if the type_id is out of range.
     """
     n: int = min(len(type_ids), len(intensities))
     type_ids_arr = (ctypes.c_int * len(type_ids))(*type_ids)
@@ -172,12 +174,15 @@ def met_for_activity_batch(type_ids: list[int], intensities: list[float] = []) -
     math_lib.met_for_activity_batch(type_ids_arr, intensities_arr, out_arr, n)
     return list(out_arr)
 
-def calories_batch(weights_kg: list[float], mets_per_hour: list[float], durations_min: list[int]) -> list[float]:
+def calories_batch(
+        weights_kg: list[float | int],
+        mets_per_hour: list[float | int],
+        durations_min: list[int]) -> list[float | int]:
     """Estimates kilo calories burned for a batch of activities.
 
     :param weights_kg: The weights of the persons doing the activities in list[kilograms].
     :param mets_per_hour: The calories burned per hour doing each activity in list[MET/h].
-    :param durations_min: The durrations of the activities in list[minutes].
+    :param durations_min: The durations of the activities in list[minutes].
     :returns: The calories burned doing each activity in list[kCal].
     """
     n: int = min(len(weights_kg), len(mets_per_hour))
@@ -189,12 +194,16 @@ def calories_batch(weights_kg: list[float], mets_per_hour: list[float], duration
     return list(out_arr)
 
 
-def calories_intensities_batch(weights_kg: list[float], default_mets_per_hour: list[float], durations_min: list[int], intensities: list[float]) -> list[float]:
+def calories_intensities_batch(
+        weights_kg: list[float | int],
+        default_mets_per_hour: list[float | int],
+        durations_min: list[int],
+        intensities: list[float | int]) -> list[float | int]:
     """Estimates kilo calories burned for a batch of activities.
 
     :param weights_kg: The weights of the persons doing the activities in list[kilograms].
-    :param mets_per_hour: The calories burned per hour doing each activity in list[MET/h].
-    :param durations_min: The durrations of the activities in list[minutes].
+    :param default_mets_per_hour: The calories burned per hour doing each activity in list[MET/h].
+    :param durations_min: The durations of the activities in list[minutes].
     :param intensities: The intensities of the batch of activities.
     :returns: The calories burned doing each activity in list[kCal].
     """
@@ -208,7 +217,9 @@ def calories_intensities_batch(weights_kg: list[float], default_mets_per_hour: l
     return list(out_arr)
 
 
-def bmi_batch(weights_kg: list[float], heights_m: list[float]) -> list[float]:
+def bmi_batch(
+        weights_kg: list[float | int],
+        heights_m: list[float | int]) -> list[float | int]:
     """Calculates the bmi of a list of person.
     
     :param weights_kg: the weights of each person in list[kilograms].
