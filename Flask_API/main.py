@@ -22,6 +22,11 @@ def get_database():
 
 
 
+@dataclass
+class Response:
+    status: Literal["ok", "error"] = "ok"
+    data: Any = None
+
 
 app = Flask(__name__)
 
