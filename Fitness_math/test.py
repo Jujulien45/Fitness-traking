@@ -1,4 +1,4 @@
-import dll_types as math_lib
+import Fitness_math.math as math_lib
 
 
 print("My bmi:", math_lib.calc_bmi(70.0, 1.85))
