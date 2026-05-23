@@ -33,7 +33,16 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "app index"
+    return "Welcome to the fitness tracker. if you want to use this api go to \"/api/README\"."
+
+
+
+
+@app.route("/api")
+@app.route("/api/help")
+@app.route("/api/README")
+def api():
+    return render_template("api_README.html")
 
 
 
