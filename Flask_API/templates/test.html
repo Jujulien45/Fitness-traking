@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>test</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
     <script>
@@ -37,8 +38,9 @@
                 body: JSON.stringify(data),
               };
             const response = await fetch(url, init);
-            console.log(response);
-            return response;
+            const result = response.json()
+            console.log(result);
+            return result;
         }
         data = {name: "George", weight_kg: 70, height_m: 185, age: 17, sex: "M"};
 

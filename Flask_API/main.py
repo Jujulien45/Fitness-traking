@@ -76,8 +76,10 @@ def get_datetime(datetime_str: str) -> datetime:
 def index():
     return "Welcome to the fitness tracker. if you want to use this api go to \"/api/README\"."
 
-
-
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.route("/api")
