@@ -1,11 +1,12 @@
 import ctypes
+from typing import TypedDict
 
 math_lib: ctypes.CDLL = ctypes.CDLL("Math_C_lib/Math_C_lib/bin/Debug/Math C lib.dll")
 
 
 
 # ctypes structures
-class Activity(ctypes.Structure):
+class ActivityStruct(ctypes.Structure):
     """A clone of the Activity struct from the compiled C in the dll library.
     """
     _fields_ = [
@@ -14,18 +15,30 @@ class Activity(ctypes.Structure):
         ("name", ctypes.c_char_p)
     ]
 
-def activity_str(activity: Activity):
-    """generates a str for the Activity class to be printed.
+class Activity(TypedDict):
+    activity_id: int
+    met: float | int
+    name: str
+
+def activity_to_dict(activity_struct: ActivityStruct) -> Activity:
+    activity_id = activity_struct.activity_id
+    met = activity_struct.met
+    name = activity_struct.name
+    __activity: Activity = {"activity_id": activity_id, "met": met, "name": name}
+    return __activity
+
+def activity_str(activity_struct: ActivityStruct):
+    """generates a str for the ActivityStruct class to be printed.
     format: f"activity_id: ...; met: ...; name: ..."
     """
-    return f"activity_id: {activity.activity_id}; met: {activity.met}; name: {activity.name}"
+    return f"activity_id: {activity_struct.activity_id}; met: {activity_struct.met}; name: {activity_struct.name}"
 
 
 # Math C lib constants repliqua
 BMI_ERROR: int = -1
 ACTIVITY_ID_ERROR: float = -1.0
 ACTIVITY_NAME_ERROR: str = ""
-ACTIVITY_ERROR: Activity = Activity(-1, -1.0, b"")
+ACTIVITY_ERROR: ActivityStruct = ActivityStruct(-1, -1.0, b"")
 
 # ctypes CDLL arg types
 math_lib.under_weight.argtypes = []
@@ -69,7 +82,7 @@ math_lib.calories_batch.restype =  None
 math_lib.calories_intensities_batch.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 math_lib.calories_intensities_batch.restype =  None
 
-math_lib.activity.argtypes = [ctypes.c_int, ctypes.POINTER(Activity)]
+math_lib.activity.argtypes = [ctypes.c_int, ctypes.POINTER(ActivityStruct)]
 math_lib.activity.restype = None
 
 
@@ -83,6 +96,7 @@ normal_weight: int = math_lib.normal_weight()
 over_weight: int = math_lib.over_weight()
 # obese weight index returned by bmi_category()
 obese_weight: int = math_lib.obese_weight()
+# list of all activities
 
 
 def calc_bmi(weight_kg: float | int, height_m: float | int) -> float | int:
@@ -124,7 +138,7 @@ def met_for_activity(type_id: int, intensity: float | int = 1) -> float | int:
 
     :param type_id: The id of the activity.
     :param intensity: The intensity at which the activity was done, defaults to one.
-    :returns: The met for the activity times the intensity, ACTIVITY_ID_ERROR (-1.0) if the type_id is out of range.
+    :returns: The met for the activity times the intensity.
     """
     activity_met: float | int = math_lib.met_for_activity(type_id, intensity)
     if activity_met == ACTIVITY_ID_ERROR:
@@ -135,7 +149,7 @@ def name_for_activity(type_id: int) -> str:
     """Gets the name for an activity.
 
     :param type_id: The id of the activity.
-    :returns: The name of the activity, ACTIVITY_NAME_ERROR ("") if the type_id is out of range.
+    :returns: The name of the activity.
     """
     activity_name: str = math_lib.name_for_activity(type_id)
     if activity_name == ACTIVITY_NAME_ERROR:
@@ -146,13 +160,13 @@ def activity(type_id: int) -> Activity:
     """Gets the activity struct instance for an activity.
 
     :param type_id: The id of the activity.
-    :returns: The activity, ACTIVITY_ERROR (Activity(-1, -1.0, b"")) if the type_id is out of range.
+    :returns: The activity.
     """
-    out: Activity = Activity()
+    out: ActivityStruct = ActivityStruct()
     math_lib.activity(type_id, ctypes.byref(out))
     if out == ACTIVITY_ERROR:
         raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
-    return out
+    return activity_to_dict(out)
 
 
 def met_for_activity_batch(
@@ -232,3 +246,17 @@ def bmi_batch(
     out_arr = (ctypes.c_float * n)()
     math_lib.bmi_batch(weights_kg_arr, heights_m_arr, out_arr, n)
     return list(out_arr)
+
+
+
+
+# list of all activities
+types: list[Activity] = []
+i: int = 1
+_activity: Activity  = activity(i)
+while activity != ACTIVITY_ERROR:
+    types.append(_activity)
+    i += 1
+    _activity = activity(i)
+_activity = Activity()
+del _activity
