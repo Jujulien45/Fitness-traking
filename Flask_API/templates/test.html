@@ -6,19 +6,48 @@
 </head>
 <body>
     <script>
-        async function sendData(data)
+        async function postData(data, url="http://localhost:5000/api/users")
         {
             let init = {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(data),
               };
-            const response = await fetch("http://127.0.0.1:5000/api/users", init);
-            console.log(response.json());
+            const response = await fetch(url, init);
+            const result = response.json()
+            console.log(result);
+            return result;
+        }
+
+
+        async function getData(url="http://localhost:5000/api/users")
+        {
+            const response = await fetch(url);
+            const result = response.json()
+            console.log(result);
+            return result;
+        }
+
+
+        async function putData(data, url="http://localhost:5000/api/users/5")
+        {
+            let init = {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data),
+              };
+            const response = await fetch(url, init);
+            console.log(response);
             return response;
-        };
-        data = {name: "Julien", weight_kg: 70, height_m: 185, age: 17, sex: "M"};
-        sendData(data);
+        }
+        data = {name: "George", weight_kg: 70, height_m: 185, age: 17, sex: "M"};
+
+        // postData(data);
+        getData().then((response) => {
+            response.data[0].weight_kg += 1;
+            const url = `http://localhost:5000/api/users/${response.data[0].id}`
+            putData(response.data[0], url);
+        });
     </script>
 </body>
 </html>
