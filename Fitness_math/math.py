@@ -1,7 +1,7 @@
 import ctypes
 from typing import TypedDict
 
-math_lib: ctypes.CDLL = ctypes.CDLL("Math_C_lib/Math_C_lib/bin/Debug/Math C lib.dll")
+math_lib: ctypes.CDLL = ctypes.CDLL("Math_C_lib/Math C lib.dll")
 
 
 
@@ -23,7 +23,7 @@ class Activity(TypedDict):
 def activity_to_dict(activity_struct: ActivityStruct) -> Activity:
     activity_id = activity_struct.activity_id
     met = activity_struct.met
-    name = activity_struct.name
+    name = activity_struct.name.decode("utf-8")
     __activity: Activity = {"activity_id": activity_id, "met": met, "name": name}
     return __activity
 
@@ -31,7 +31,7 @@ def activity_str(activity_struct: ActivityStruct):
     """generates a str for the ActivityStruct class to be printed.
     format: f"activity_id: ...; met: ...; name: ..."
     """
-    return f"activity_id: {activity_struct.activity_id}; met: {activity_struct.met}; name: {activity_struct.name}"
+    return f"activity_id: {activity_struct.activity_id}; met: {activity_struct.met}; name: {activity_struct.name.decode("utf-8")}"
 
 
 # Math C lib constants repliqua
@@ -39,6 +39,7 @@ BMI_ERROR: int = -1
 ACTIVITY_ID_ERROR: float = -1.0
 ACTIVITY_NAME_ERROR: str = ""
 ACTIVITY_ERROR: ActivityStruct = ActivityStruct(-1, -1.0, b"")
+ACTIVITY_COUNT: int = 100
 
 # ctypes CDLL arg types
 math_lib.under_weight.argtypes = []
@@ -164,14 +165,14 @@ def activity(type_id: int) -> Activity:
     """
     out: ActivityStruct = ActivityStruct()
     math_lib.activity(type_id, ctypes.byref(out))
-    if out == ACTIVITY_ERROR:
-        raise ValueError(f"type_id({type_id} has to be between 0 and 100)")
+    if out.activity_id == ACTIVITY_ERROR.activity_id:
+        raise ValueError(f"type_id({type_id}) has to be between 1 and 100")
     return activity_to_dict(out)
 
 
 def met_for_activity_batch(
         type_ids: list[int],
-        intensities: list[float | int] = []) -> list[float]:
+        intensities: list[float | int] = []) -> list[float |int]:
     """Gets the MET/h values for a batch of activities.
 
     :param type_ids: The ids of the activities.
@@ -253,10 +254,10 @@ def bmi_batch(
 # list of all activities
 types: list[Activity] = []
 i: int = 1
-_activity: Activity  = activity(i)
-while activity != ACTIVITY_ERROR:
+_activity: Activity = activity(i)
+for i in range(1, ACTIVITY_COUNT):
     types.append(_activity)
     i += 1
     _activity = activity(i)
-_activity = Activity()
+_activity = None
 del _activity

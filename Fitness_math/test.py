@@ -9,4 +9,4 @@ bmis: list[float] = math_lib.bmi_batch([70, 70.5, 71, 71.5, 72], [1.85, 1.85, 1.
 print("My bmis:", bmis)
 print()
 activity: math_lib.Activity = math_lib.activity(10)
-print(math_lib.activity_str(activity))
+print(activity)
