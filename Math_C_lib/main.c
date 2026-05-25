@@ -165,7 +165,7 @@ float DLL_EXPORT kCal_burned(const float weight_kg, const float met_per_hour, co
 void DLL_EXPORT activity(int type_id, Activity *out)
 {
     if (type_id > ACTIVITY_COUNT || type_id <= 0) *out = ACTIVITY_ERROR;
-    *out = ACTIVITIES[type_id - 1];
+    else *out = ACTIVITIES[type_id - 1];
     return;
 }
 
@@ -173,14 +173,14 @@ void DLL_EXPORT activity(int type_id, Activity *out)
 float DLL_EXPORT met_for_activity(int type_id, float intensity)
 {
     if (type_id > ACTIVITY_COUNT || type_id <= 0) return ACTIVITY_ID_ERROR;
-    return ACTIVITIES[type_id + 1].met * intensity;
+    return ACTIVITIES[type_id - 1].met * intensity;
 }
 
 
 const char* DLL_EXPORT name_for_activity(int type_id)
 {
     if (type_id > ACTIVITY_COUNT || type_id <= 0) return ACTIVITY_NAME_ERROR;
-    return ACTIVITIES[type_id + 1].name;
+    return ACTIVITIES[type_id - 1].name;
 }
 
 
