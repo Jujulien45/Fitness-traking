@@ -34,7 +34,7 @@ def activity_str(activity_struct: ActivityStruct):
     return f"activity_id: {activity_struct.activity_id}; met: {activity_struct.met}; name: {activity_struct.name.decode("utf-8")}"
 
 
-# Math C lib constants repliqua
+# Math C lib constants copy
 BMI_ERROR: int = -1
 ACTIVITY_ID_ERROR: float = -1.0
 ACTIVITY_NAME_ERROR: str = ""
@@ -119,10 +119,10 @@ def bmi_category(bmi: float | int) -> int:
     over_weight (2) if over,
     obese_weight (3) if obese.
     """
-    bmi_category: int = math_lib.bmi_category(bmi)
-    if bmi_category == BMI_ERROR:
+    _bmi_category: int = math_lib.bmi_category(bmi)
+    if _bmi_category == BMI_ERROR:
         raise ValueError(f"bmi value({bmi}) has to be positive.")
-    return bmi_category
+    return _bmi_category
 
 def kCal_burned(weight_kg: float | int, met_per_hour: float | int, duration_min: int) -> float | int:
     """Estimates the kilo calories burned after doing an activity.
@@ -172,19 +172,21 @@ def activity(type_id: int) -> Activity:
 
 def met_for_activity_batch(
         type_ids: list[int],
-        intensities: list[float | int] = []) -> list[float |int]:
+        intensities: list[float | int] | None = None) -> list[float |int]:
     """Gets the MET/h values for a batch of activities.
 
     :param type_ids: The ids of the activities.
     :param intensities: The intensities at which the activities were done, defaults to one.
     :returns: The mets for the activities times the intensities, ACTIVITY_ID_ERROR (-1.0) if the type_id is out of range.
     """
+    if intensities is None:
+        intensities = []
     n: int = min(len(type_ids), len(intensities))
     type_ids_arr = (ctypes.c_int * len(type_ids))(*type_ids)
     if intensities:
         intensities_arr = (ctypes.c_float * len(intensities))(*intensities)
     else:
-        intensities_arr = (ctypes.c_float * n)(*[1 for i in range(n)])
+        intensities_arr = (ctypes.c_float * n)(*[1 for _ in range(n)])
     out_arr = (ctypes.c_float * n)()
     math_lib.met_for_activity_batch(type_ids_arr, intensities_arr, out_arr, n)
     return list(out_arr)
@@ -259,5 +261,4 @@ for i in range(1, ACTIVITY_COUNT):
     types.append(_activity)
     i += 1
     _activity = activity(i)
-_activity = None
 del _activity
