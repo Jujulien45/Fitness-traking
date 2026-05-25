@@ -88,8 +88,16 @@ def update_user(user_id: int):
 
     _user: dict = request.get_json()
     if not ftypes.matches_typeddict(_user, ftypes.User):
-        raise ValueError(f"Did not match the expected User format, value: {_user}")
-    _user: ftypes.User
+        if not ftypes.matches_typeddict(_user, ftypes.AddedUser):
+            raise ValueError(f"Did not match the expected User or AddedUser format, value: {_user}")
+        else:
+            _user: ftypes.AddedUser
+    else:
+        _user: ftypes.User
+        if _user["id"] != user_id:
+            raise ValueError("the user id in the body of the PUT request is different from the user id in the url."
+                             "Consider syncing those or getting rid of the user id in the body"
+                             f"user ids, request body: {_user['id']}, url: {user_id}.")
 
     params: tuple = (
         _user["name"],
@@ -97,7 +105,7 @@ def update_user(user_id: int):
         _user["height_m"],
         _user["age"],
         _user["sex"],
-        _user["id"]
+        user_id
     )
     cursor.execute(
         "UPDATE users SET name = %s, weight_kg = %s, height_m = %s, age = %s, sex = %s "
