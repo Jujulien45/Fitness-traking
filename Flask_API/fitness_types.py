@@ -22,7 +22,7 @@ class AddedSession(TypedDict):
     type: str
     duration_min: int
     met: float | int
-    date: datetime
+    date: str
 
 class CaloriesSession(AddedSession):
     calories: float | int
@@ -30,6 +30,22 @@ class CaloriesSession(AddedSession):
 class Session(CaloriesSession):
     id: int
 
+
+class Stat(TypedDict):
+    total_min: int
+    total_kcal: float | int
+    count: int
+    type: str
+
+Stats = list[Stat]
+
+
+class BmiData(TypedDict):
+    date: str
+    bmi: float | int
+
+
+BmiHistory = list[BmiData]
 
 def matches_typeddict(data: dict, td_class) -> bool:
     hints = get_type_hints(td_class)

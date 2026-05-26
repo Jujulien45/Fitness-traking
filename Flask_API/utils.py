@@ -20,4 +20,13 @@ def get_datetime(datetime_str: str) -> datetime:
     :param datetime_str: The format is 'yyyy/mm/dd hh:mm:ss'.
     :returns: A datetime object.
     """
-    return datetime.strptime(datetime_str, "%Y/%m/%d %H:%M:%S")
+    return datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
+
+
+def get_datetime_str(_datetime: datetime) -> str:
+    """Converts a datetime into a formated str.
+
+    :param _datetime: A datetime object.
+    :returns: The format is 'yyyy/mm/dd hh:mm:ss'.
+    """
+    return _datetime.strftime("%Y-%m-%d %H:%M:%S")

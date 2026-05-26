@@ -2,8 +2,8 @@ from flask import Blueprint, request
 from dataclasses import asdict
 
 import Flask_API.fitness_types as ftypes
-from Flask_API.utils import get_database
-from Fitness_math import math as fmath
+from Flask_API.utils import get_database, get_datetime_str
+from Fitness_math import fmath
 
 users_blueprint: Blueprint = Blueprint("api/users", __name__)
 
@@ -132,3 +132,75 @@ def user(user_id: int):
         response.data = str(e)
 
     return asdict(response)
+
+
+
+
+
+
+def stats(user_id: int) -> ftypes.Stats:
+    database = get_database()
+    cursor = database.cursor(dictionary=True)
+
+    cursor.execute("SELECT "
+                   "SUM(duration_min) AS total_min, "
+                   "SUM(calories) AS total_kcal, "
+                   "type, "
+                   "COUNT(*) AS count"
+                   "FROM users "
+                   "WHERE user_id = %s "
+                   "ORDER BY type",
+                   (user_id,))
+    _stats : ftypes.Stats = cursor.fetchall()
+
+    cursor.close()
+    return _stats
+
+
+@users_blueprint.route("/<int:user_id>/stats", methods=["GET"])
+def user_stats(user_id: int):
+    response: ftypes.Response = ftypes.Response()
+    try:
+        response.data = stats(user_id)
+    except Exception as e:
+        response.status = "error"
+        response.data = str(e)
+
+    return asdict(response)
+
+
+
+
+
+def bmi_history(user_id: int) -> ftypes.BmiHistory:
+    database = get_database()
+    cursor = database.cursor(dictionary=True)
+
+    cursor.execute("SELECT height_m FROM users WHERE id = %s", (user_id,))
+    height_m: float | int = cursor.fetchone()
+    cursor.execute("SELECT date, weight_kg FROM weights_history WHERE user = %s ORDER BY date", (user_id,))
+    raw_history = cursor.fetchall()
+    _bmi_history: ftypes.BmiHistory = []
+    for data in raw_history:
+        bmi: ftypes.BmiData = {
+            "date": get_datetime_str(data["date"]),
+            "bmi": fmath.calc_bmi(data["weight_kg"], height_m)
+        }
+        _bmi_history.append(bmi)
+
+    cursor.close()
+    return _bmi_history
+
+@users_blueprint.route("/<int:user_id>/stats", methods=["GET"])
+def user_history(user_id: int):
+    response: ftypes.Response = ftypes.Response()
+    try:
+        response.data = bmi_history(user_id)
+    except Exception as e:
+        response.status = "error"
+        response.data = str(e)
+
+    return asdict(response)
+
+
+
