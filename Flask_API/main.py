@@ -1,8 +1,7 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, send_from_directory, abort
 import os
 from Flask_API.endpoints.users import users_blueprint
 from Flask_API.endpoints.sessions import sessions_blueprint
-
 app = Flask(__name__)
 
 
@@ -10,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Welcome to the fitness tracker. if you want to use this api go to \"/api/README\"."
+    return "Welcome to the fitness tracker. if you want to use this api go to \"/api/README.html\"."
 
 @app.route('/favicon.ico')
 def favicon():
@@ -18,12 +17,18 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@app.route("/api")
-@app.route("/api/help")
-@app.route("/api/README")
-def api():
-    return render_template("api_README.html")
 
+SPHINX_BUILD_DIR = os.path.join(os.path.dirname(__file__), "docs/_build")
+
+@app.route("/api/")
+@app.route("/api/<path:filename>")
+def docs(filename = "index.html"):
+    file_path = os.path.join(SPHINX_BUILD_DIR, filename)
+
+    if os.path.isfile(file_path):
+        return send_from_directory(SPHINX_BUILD_DIR, filename)
+
+    return abort(404)
 
 
 

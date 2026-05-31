@@ -146,10 +146,10 @@ def stats(user_id: int) -> ftypes.Stats:
                    "SUM(duration_min) AS total_min, "
                    "SUM(calories) AS total_kcal, "
                    "type, "
-                   "COUNT(*) AS count"
-                   "FROM users "
+                   "COUNT(*) AS count "
+                   "FROM sessions "
                    "WHERE user_id = %s "
-                   "ORDER BY type",
+                   "GROUP BY type",
                    (user_id,))
     _stats : ftypes.Stats = cursor.fetchall()
 
@@ -177,8 +177,8 @@ def bmi_history(user_id: int) -> ftypes.BmiHistory:
     cursor = database.cursor(dictionary=True)
 
     cursor.execute("SELECT height_m FROM users WHERE id = %s", (user_id,))
-    height_m: float | int = cursor.fetchone()
-    cursor.execute("SELECT date, weight_kg FROM weights_history WHERE user = %s ORDER BY date", (user_id,))
+    height_m: float | int = cursor.fetchone()["height_m"]
+    cursor.execute("SELECT changed_at AS date, weight_kg FROM weights_history WHERE user_id = %s ORDER BY date", (user_id,))
     raw_history = cursor.fetchall()
     _bmi_history: ftypes.BmiHistory = []
     for data in raw_history:
@@ -191,7 +191,8 @@ def bmi_history(user_id: int) -> ftypes.BmiHistory:
     cursor.close()
     return _bmi_history
 
-@users_blueprint.route("/<int:user_id>/stats", methods=["GET"])
+
+@users_blueprint.route("/<int:user_id>/bmi_history", methods=["GET"])
 def user_history(user_id: int):
     response: ftypes.Response = ftypes.Response()
     try:

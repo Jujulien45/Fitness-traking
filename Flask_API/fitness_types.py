@@ -30,6 +30,15 @@ class CaloriesSession(AddedSession):
 class Session(CaloriesSession):
     id: int
 
+class SessionDatetime(TypedDict):
+    id: int
+    user_id: int
+    type: str
+    duration_min: int
+    met: float | int
+    date: datetime
+    calories: float | int
+
 
 class Stat(TypedDict):
     total_min: int

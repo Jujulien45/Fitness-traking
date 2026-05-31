@@ -3,7 +3,7 @@ from dataclasses import asdict
 
 import Flask_API.fitness_types as ftypes
 from Fitness_math import fmath
-from Flask_API.utils import get_database, get_datetime
+from Flask_API.utils import get_database, get_datetime, get_datetime_str
 
 
 sessions_blueprint: Blueprint = Blueprint("/api/sessions", __name__)
@@ -19,10 +19,6 @@ def post_session(session: ftypes.AddedSession | None = None):
     if session is None:
         session: dict = request.get_json()
 
-        if session.get("date") is None:
-            raise ValueError("Missing date for the session")
-        session["date"] = get_datetime(session["date"])
-
         if ftypes.matches_typeddict(session, ftypes.AddedSession):
             raise ValueError(f"Did not match the expected AddedSession format, value: {session}")
     session: ftypes.AddedSession
@@ -31,7 +27,7 @@ def post_session(session: ftypes.AddedSession | None = None):
         "SELECT weight_kg FROM users WHERE id = %s",
         (session["user_id"],)
     )
-    weight_kg: int | float = cursor.fetchone()
+    weight_kg: int | float = cursor.fetchone()["weight_kg"]
     if weight_kg is None:
         raise ValueError(f"user_id is not an existing user id: {session["user_id"]}")
 
@@ -70,8 +66,11 @@ def get_session(user_id: int = -1) -> list[ftypes.Session]:
             raise ValueError("The '/api/sessions' GET request needs a user_id as a query url parameter.")
 
     cursor.execute("SELECT * FROM sessions WHERE user_id = %s", (user_id,))
-    sessions: list[ftypes.Session] = cursor.fetchall()
+    sessions: list[ftypes.SessionDatetime] = cursor.fetchall()
+    for session in sessions:
+        session["date"] = get_datetime_str(session["date"])
 
+    sessions: list[ftypes.Session]
     cursor.close()
     return sessions
 
@@ -82,7 +81,7 @@ def user_session():
     response = ftypes.Response()
     try:
         if request.method == "GET":
-            request.data = get_session()
+            response.data = get_session()
 
         elif request.method == "POST":
             post_session()
@@ -100,4 +99,4 @@ def user_session():
 def types():
     response: ftypes.Response = ftypes.Response()
     response.data = fmath.types
-    return response
+    return asdict(response)

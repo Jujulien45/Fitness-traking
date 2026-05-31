@@ -11,7 +11,8 @@ from Flask_API.utils import get_datetime_str
 
 
 def test_bmi_basic():
-    assert isclose(fmath.calc_bmi(75, 1.75), 22.86)
+    # the right value is 24.48... not 22.86 !!!
+    assert isclose(fmath.calc_bmi(75, 1.75), 24.48, abs_tol=0.01)
 
 def test_bmi_category_normal():
     assert fmath.bmi_category(22) == fmath.normal_weight
@@ -46,25 +47,32 @@ def test_met_lookup_course():
     assert activity_met == 13.0
 
 def test_save_session_roundtrip():
+    test_done = False
+
     add_session: ftypes.AddedSession = {
-        "user_id": 0,
+        "user_id": 1,
         "type": ''.join(random.choices(string.ascii_letters, k=10)),
         "duration_min": randint(0, 100),
         "met": randint(0, 150),
         "date": get_datetime_str(datetime.now()),
     }
-    post_session(add_session)
-    _sessions = get_session(0)
+    post_session(add_session.copy())
+    _sessions: list[ftypes.Session] = get_session(1)
     for session in _sessions:
-        session: ftypes.AddedSession
         del session["id"]
-        if session == add_session:
-            assert True
+        del session["calories"]
+        session: ftypes.AddedSession
+        # print(session == add_session)
 
-    assert False
+        # for key in session.keys() | add_session.keys():
+        #     print(key, session.get(key), add_session.get(key), session.get(key) == add_session.get(key))
+        if session == add_session:
+            test_done = True
+    if not test_done:
+        assert False
 
 """
-def test_weekly_stats_aggregation
+def test_weekly_stats_aggregation():
 def test_bmi_history_returns_chronological
 def test_validate_negative_weight_rejected
 """
