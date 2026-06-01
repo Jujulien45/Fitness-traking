@@ -25,29 +25,29 @@ public class UserDto
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
-    [JsonPropertyName("Age")]
+    [JsonPropertyName("age")]
     public int Age { get; set; }
-    [JsonPropertyName("Height_m")]
+    [JsonPropertyName("height_m")]
     public float Height_m { get; set; }
-    [JsonPropertyName("Name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
-    [JsonPropertyName("Sex")]
+    [JsonPropertyName("sex")]
     public string Sex { get; set; }
-    [JsonPropertyName("Weight_kg")]
+    [JsonPropertyName("weight_kg")]
     public float Weight_kg { get; set; }
 }
 
 public class WriteUserDto
 {
-    [JsonPropertyName("Age")]
+    [JsonPropertyName("age")]
     public int Age { get; set; }
-    [JsonPropertyName("Height_m")]
+    [JsonPropertyName("height_m")]
     public float Height_m { get; set; }
-    [JsonPropertyName("Name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
-    [JsonPropertyName("Sex")]
+    [JsonPropertyName("sex")]
     public string Sex { get; set; }
-    [JsonPropertyName("Weight_kg")]
+    [JsonPropertyName("weight_kg")]
     public float Weight_kg { get; set; }
 }
 
