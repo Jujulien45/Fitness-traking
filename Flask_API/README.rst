@@ -209,10 +209,10 @@ users endpoints
         ftypes.User
 
 
-**/api/users/<int:user_id> (POST)**
+**/api/users/<int:user_id> (PUT)**
     Updates the data of the user with this user_id.
 
-    POST request body's format and type:
+    PUT request body's format and type:
 
     .. code-block:: json
 

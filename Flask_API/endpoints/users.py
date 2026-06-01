@@ -24,11 +24,13 @@ def get_users() -> list[ftypes.User]:
     return _users
 
 
-def add_user():
+def add_user(_user: ftypes.AddedUser | None = None):
     database = get_database()
     cursor = database.cursor(dictionary=True)
 
-    _user = request.get_json()
+    if _user is None:
+        _user = request.get_json()
+
     if not ftypes.matches_typeddict(_user, ftypes.AddedUser):
         raise ValueError(f"Did not match the expected AddedUser format, value: {_user}")
     _user: ftypes.AddedUser
@@ -78,7 +80,7 @@ def get_user(user_id: int) -> ftypes.User:
     imc = fmath.calc_bmi(_user["weight_kg"], _user["height_m"])
     _user |= {"imc": imc}
 
-    cursor.cloase()
+    cursor.close()
     return _user
 
 
