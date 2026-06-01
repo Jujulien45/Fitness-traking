@@ -1,6 +1,6 @@
 ﻿namespace Systeme_mutli_langages;
 
-partial class Form1
+partial class LoginForm
 {
     /// <summary>
     ///  Required designer variable.
@@ -29,15 +29,27 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
+        comboUsers = new System.Windows.Forms.ComboBox();
         SuspendLayout();
         // 
-        // Form1
+        // comboUsers
+        // 
+        comboUsers.FormattingEnabled = true;
+        comboUsers.Location = new System.Drawing.Point(169, 167);
+        comboUsers.Name = "comboUsers";
+        comboUsers.Size = new System.Drawing.Size(111, 28);
+        comboUsers.TabIndex = 0;
+        // 
+        // LoginForm
         // 
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
         ClientSize = new System.Drawing.Size(800, 450);
-        Text = "Form1";
+        Controls.Add(comboUsers);
+        Text = "login";
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.ComboBox comboUsers;
 
     #endregion
 }

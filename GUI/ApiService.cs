@@ -58,7 +58,7 @@ public class ApiService
     public ApiService()
     {
         _client = new HttpClient();
-        _client.BaseAddress = new Uri("https://localhost:5000/api/");
+        _client.BaseAddress = new Uri("http://localhost:5000/api/");
     }
 
     public async Task<List<UserDto>> GetUsersAsync()
@@ -76,17 +76,17 @@ public class ApiService
         else throw new Exception("an error has occured in the server !");
     }
 
-    public async Task UpdateProfileAsync(int userId, WriteUserDto dto)
+    public async Task UpdateUserAsync(int userId, WriteUserDto dto)
     {
-        _client.PostAsJsonAsync(
+        _client.PutAsJsonAsync(
             $"users/{userId}",
             dto);
     }
     
-    public async Task UpdateProfileAsync(int userId, WriteUserDto dto)
+    public async Task AddUserAsync(WriteUserDto dto)
     {
         _client.PostAsJsonAsync(
-            $"users/{userId}",
+            $"users",
             dto);
     }
 }
