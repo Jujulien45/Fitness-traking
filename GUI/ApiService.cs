@@ -15,30 +15,40 @@ public class ApiResponse<T>
 
     [JsonPropertyName("status")]
     public string? Status { get; set; }
+    
+    public bool IsSuccess =>
+        string.Equals(Status, "ok",
+            StringComparison.OrdinalIgnoreCase);
 }
 
 public class UserDto
 {
-    public in id {}
-"age": 17,
-"height_m": 195.0,
-"id": 1,
-"name": "Julien",
-"sex": "M" or "F",
-"weight_kg": 80.0
+    [JsonPropertyName("id")]
     public int Id { get; set; }
-    public string Username { get; set; }
+    [JsonPropertyName("Age")]
+    public int Age { get; set; }
+    [JsonPropertyName("Height_m")]
+    public float Height_m { get; set; }
+    [JsonPropertyName("Name")]
+    public string Name { get; set; }
+    [JsonPropertyName("Sex")]
+    public string Sex { get; set; }
+    [JsonPropertyName("Weight_kg")]
+    public float Weight_kg { get; set; }
 }
 
-public class AddUserDto
+public class WriteUserDto
 {
-    public int Id { get; set; }
-    public string Username { get; set; }
-}
-
-public class UpdateUserDto
-{
-    public string Bio { get; set; }
+    [JsonPropertyName("Age")]
+    public int Age { get; set; }
+    [JsonPropertyName("Height_m")]
+    public float Height_m { get; set; }
+    [JsonPropertyName("Name")]
+    public string Name { get; set; }
+    [JsonPropertyName("Sex")]
+    public string Sex { get; set; }
+    [JsonPropertyName("Weight_kg")]
+    public float Weight_kg { get; set; }
 }
 
 public class ApiService
@@ -48,24 +58,35 @@ public class ApiService
     public ApiService()
     {
         _client = new HttpClient();
-        _client.BaseAddress = new Uri("https://localhost:5001/api/");
+        _client.BaseAddress = new Uri("https://localhost:5000/api/");
     }
 
     public async Task<List<UserDto>> GetUsersAsync()
     {
-        return await _client.GetFromJsonAsync<List<UserDto>>("users");
+        ApiResponse<List<UserDto>> response = await _client.GetFromJsonAsync<ApiResponse<List<UserDto>>>("users") ?? throw new Exception("Null response from server");
+        if (response.IsSuccess) return response.Data;
+        else throw new Exception("an error has occured in the server !");
     }
 
-    public async Task<UserProfileDto> GetProfileAsync(int userId)
+    public async Task<UserDto> GetUserAsync(int userId)
     {
-        return await _client.GetFromJsonAsync<UserProfileDto>(
-            $"users/{userId}/profile");
+        ApiResponse<UserDto> response =  await _client.GetFromJsonAsync<ApiResponse<UserDto>>(
+            $"users/{userId}") ?? throw new Exception("Null response from server");
+        if (response.IsSuccess) return response.Data;
+        else throw new Exception("an error has occured in the server !");
     }
 
-    public async Task UpdateProfileAsync(int userId, UpdateProfileDto dto)
+    public async Task UpdateProfileAsync(int userId, WriteUserDto dto)
     {
-        await _client.PutAsJsonAsync(
-            $"users/{userId}/profile",
+        _client.PostAsJsonAsync(
+            $"users/{userId}",
+            dto);
+    }
+    
+    public async Task UpdateProfileAsync(int userId, WriteUserDto dto)
+    {
+        _client.PostAsJsonAsync(
+            $"users/{userId}",
             dto);
     }
 }
