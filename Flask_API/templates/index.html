@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <label for="user">User:</label>
+    <select id="user">
+
+    </select>
+    <script>
+        const users = ["Alice", "Bob", "Charlie"];
+
+        const select = document.getElementById("user");
+
+        users.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+        const user = document.getElementById("user").value;
+        console.log(user);
+    </script>
+</body>
+</html>

@@ -78,7 +78,7 @@ def test_save_user_roundtrip():
     added_user: ftypes.AddedUser = {
         "name": ''.join(random.choices(string.ascii_letters, k=10)),
         "weight_kg": randint(50, 100),
-        "height_m": randint(140, 210),
+        "height_m": randint(140, 210) / 100,
         "age": randint(13, 60),
         "sex": random.choice(['M', 'F'])
     }
