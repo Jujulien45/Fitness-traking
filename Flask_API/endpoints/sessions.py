@@ -19,8 +19,8 @@ def post_session(session: ftypes.AddedSession | None = None):
     if session is None:
         session: dict = request.get_json()
 
-        if ftypes.matches_typeddict(session, ftypes.AddedSession):
-            raise ValueError(f"Did not match the expected AddedSession format, value: {session}")
+        #if ftypes.matches_typeddict(session, ftypes.AddedSession):
+        #    raise ValueError(f"Did not match the expected AddedSession format, value: {session}")
     session: ftypes.AddedSession
 
     cursor.execute(
