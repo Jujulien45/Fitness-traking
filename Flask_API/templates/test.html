@@ -20,6 +20,19 @@
             return result;
         }
 
+        async function postSession(data, url="http://localhost:5000/api/sessions?user_id=2")
+        {
+            let init = {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data),
+              };
+            const response = await fetch(url, init);
+            const result = response.json()
+            console.log(result);
+            return result;
+        }
+
 
         async function getData(url="http://localhost:5000/api/users")
         {
@@ -43,8 +56,10 @@
             return result;
         }
         data = {name: "George", weight_kg: 70, height_m: 185, age: 17, sex: "M"};
+        let session = {user_id: 1, type: "Julien", duration_min: 200, met: 100, date: "2026-04-27 13:00:00"};
 
         // postData(data);
+        // postSession(session);
         getData().then((response) => {
             response.data[0].weight_kg += 1;
             const url = `http://localhost:5000/api/users/${response.data[0].id}`
