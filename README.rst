@@ -15,6 +15,10 @@ You need a python version installed to create a venv.
 
 first step clone or fork the repo copy all the files on your machine.
 
+To do so you need to have git and git large storage file and have run that once::
+
+    git lfs install
+
 Then at the root of the project.
 
 Create the venv::
