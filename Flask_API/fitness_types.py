@@ -52,6 +52,7 @@ Stats = list[Stat]
 class BmiData(TypedDict):
     date: str
     bmi: float | int
+    category: str
 
 
 BmiHistory = list[BmiData]

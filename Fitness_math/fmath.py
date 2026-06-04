@@ -99,6 +99,13 @@ over_weight: int = math_lib.over_weight()
 obese_weight: int = math_lib.obese_weight()
 # list of all activities
 
+bmi_categories = {
+    under_weight: "under",
+    normal_weight: "normal",
+    over_weight: "over",
+    obese_weight: "obese"
+}
+
 
 def calc_bmi(weight_kg: float | int, height_m: float | int) -> float | int:
     """Calculates the bmi of someone.

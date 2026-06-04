@@ -190,9 +190,11 @@ def bmi_history(user_id: int) -> ftypes.BmiHistory:
     raw_history = cursor.fetchall()
     _bmi_history: ftypes.BmiHistory = []
     for data in raw_history:
+        bmi_val = fmath.calc_bmi(data["weight_kg"], height_m)
         bmi: ftypes.BmiData = {
             "date": get_datetime_str(data["date"]),
-            "bmi": fmath.calc_bmi(data["weight_kg"], height_m)
+            "bmi": bmi_val,
+            "category": fmath.bmi_categories[fmath.bmi_category(bmi_val)]
         }
         _bmi_history.append(bmi)
 

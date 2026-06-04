@@ -283,7 +283,8 @@ users endpoints
           "data": [
             {
               "bmi": 21.038789749145508,
-              "date": "2026-05-31 19:41:08"
+              "date": "2026-05-31 19:41:08",
+              "category": "under" or "normal" or "over" or "obese",
             },
             ...
           ],
