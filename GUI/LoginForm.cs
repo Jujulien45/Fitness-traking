@@ -15,8 +15,8 @@ public partial class LoginForm : Form
     {
         var users = await _api.GetUsersAsync();
 
-        comboUsers.DataSource = users;
-        comboUsers.DisplayMember = "Name";
-        comboUsers.ValueMember = "Id";
+        users_combo.DataSource = users;
+        users_combo.DisplayMember = "Name";
+        users_combo.ValueMember = "Id";
     }
 }
