@@ -45,4 +45,8 @@ app.register_blueprint(sessions_blueprint, url_prefix="/api/sessions")
 @app.route("/test")
 def test():
     return render_template("test.html")
-app.run(debug=True)
+
+@app.route("/test2")
+def test2():
+    return render_template("test2.html")
+app.run(debug=False)

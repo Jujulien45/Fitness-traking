@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        const BASE_URL = "http://localhost:5000";
+
+        /* -------------------------
+           CONFIG
+        -------------------------- */
+
+        const NUM_USERS = 10;
+        const SESSIONS_PER_USER = 20;
+
+        /* -------------------------
+           HELPERS
+        -------------------------- */
+
+        async function api(path, method = "GET", body = null) {
+          const res = await fetch(BASE_URL + path, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: body ? JSON.stringify(body) : null
+          });
+
+          return res.json();
+        }
+
+        const rand = (min, max) =>
+          Math.floor(Math.random() * (max - min + 1)) + min;
+
+        const randFloat = (min, max) =>
+          +(Math.random() * (max - min) + min).toFixed(2);
+
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        /* -------------------------
+           DATA GENERATION
+        -------------------------- */
+
+        const names = [
+          "Alex", "Jordan", "Sam", "Taylor", "Chris",
+          "Morgan", "Jamie", "Casey", "Riley", "Drew"
+        ];
+
+        const sexes = ["M", "F"];
+
+        /* -------------------------
+           CORE LOGIC
+        -------------------------- */
+
+        async function createUsers() {
+          console.log("Creating users...");
+
+          for (let i = 0; i < NUM_USERS; i++) {
+            await api("/api/users", "POST", {
+              name: names[i],
+              age: rand(18, 45),
+              height_m: randFloat(1.55, 2.00),
+              weight_kg: randFloat(55, 95),
+              sex: sexes[rand(0, 1)]
+            });
+          }
+
+          const res = await api("/api/users");
+          console.log(`Users created: ${res.data.length}`);
+
+          return res.data;
+        }
+
+        async function getSessionTypes() {
+          const res = await api("/api/sessions/types");
+          console.log(`Session types loaded: ${res.data.length}`);
+          return res.data;
+        }
+
+        /* -------------------------
+           SESSION + WEIGHT SIMULATION
+        -------------------------- */
+
+        async function simulateUserActivity(user, sessionTypes) {
+          console.log(`Simulating user ${user.id}...`);
+
+          let weight = user.weight_kg;
+
+          for (let i = 0; i < SESSIONS_PER_USER; i++) {
+
+            const type = sessionTypes[rand(0, sessionTypes.length - 1)];
+
+            // session creation
+            await api(`/api/sessions?user_id=${user.id}`, "POST", {
+              user_id: user.id,
+              type: type.name,
+              duration_min: rand(10, 90),
+              met: type.met,
+              date: new Date(Date.now() - rand(0, 1000000000))
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ")
+            });
+
+            // -----------------------------------------
+            // WEIGHT LOGIC (simple simulation model)
+            // -----------------------------------------
+            // higher MET + longer duration => slight weight drop
+
+            const duration = rand(10, 90);
+            const calorieBurn = type.met * duration * 0.1;
+
+            weight -= calorieBurn * 0.001; // small realistic decrement
+
+            // occasional fluctuations (food intake)
+            if (Math.random() < 0.3) {
+              weight += randFloat(0.1, 0.8);
+            }
+
+            weight = +weight.toFixed(2);
+
+            // update user weight every ~5 sessions
+            if (i % 5 === 0) {
+              await api(`/api/users/${user.id}`, "PUT", {
+                name: user.name,
+                age: user.age,
+                height_m: user.height_m,
+                weight_kg: weight,
+                sex: user.sex
+              });
+            }
+          }
+
+          console.log(`User ${user.id} final weight: ${weight}`);
+        }
+
+        /* -------------------------
+           MAIN EXECUTION
+        -------------------------- */
+
+        async function run() {
+          console.log("=== START SEED SCRIPT ===");
+
+          const users = await createUsers();
+          const sessionTypes = await getSessionTypes();
+
+          for (const user of users) {
+            await simulateUserActivity(user, sessionTypes);
+          }
+
+          console.log("=== DONE ===");
+        }
+
+        run();
+    </script>
+</body>
+</html>
