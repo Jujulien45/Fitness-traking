@@ -31,15 +31,17 @@ Activate the venv::
 
 Install the requirements if you only need to run the server::
 
-    pip install -r /requirements.txt
+    pip install -r requirements.txt
 
 Install the dev_requirements if you want to modify the project::
 
-    pip install -r /dev_requirements.txt
+    pip install -r dev_requirements.txt
 
 
 Mysql database
 --------------
+
+Name it Tracker_Fitness.
 
 Install xammp if not installed and import the "tracker_fitness.sql" database file.
 
