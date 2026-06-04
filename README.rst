@@ -3,8 +3,65 @@ Fitness traking
 This project aims to make an app to track fitness progress
 
 
+API docs
+--------
+The `api docs are here <Flask_API/README.rst>`_
 
 
+setup the flask server
+----------------------
+
+You need a python version installed to create a venv.
+
+first step clone or fork the repo copy all the files on your machine.
+
+Then at the root of the project.
+
+Create the venv::
+
+    python -m venv .env
+
+Activate the venv::
+
+    .env/Scripts/Activate
+
+Install the requirements if you only need to run the server::
+
+    pip install -r /requirements.txt
+
+Install the dev_requirements if you want to modify the project::
+
+    pip install -r /dev_requirements.txt
 
 
-sphinx-build -E -b html docs docs/_build
+Mysql database
+--------------
+
+Install xammp if not installed and import the "tracker_fitness.sql" database file.
+
+
+Run the server
+--------------
+
+Firstly you need the mysql database running with xammp and the python venv.
+go to the root of the project and run::
+
+    python "Flask_API/main.py"
+
+Hooray ! You just lauched the flask server with the api.
+
+
+Run the C# winforms GUI
+-----------------------
+
+Firstly lauch the server/API.
+
+Then launch the standalone executable at "Release/GUI.exe"
+
+
+Run the javascript dashboard
+----------------------------
+
+When the flask server is launched it will automatically host the dashboard at "localhost:5000/dashboard"
+
+So just go there to run it.
