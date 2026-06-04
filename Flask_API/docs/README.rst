@@ -175,7 +175,14 @@ users endpoints
     .. code-block:: json
 
         {
-          "data": None,
+          "data": {
+              "id": 1,
+              "age": 17,
+              "height_m": 195.0,
+              "name": "Julien",
+              "sex": "M" or "F",
+              "weight_kg": 80.0
+            },
           "status": "ok"
         }
 

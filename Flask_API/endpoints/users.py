@@ -24,7 +24,7 @@ def get_users() -> list[ftypes.User]:
     return _users
 
 
-def add_user(_user: ftypes.AddedUser | None = None):
+def add_user(_user: ftypes.AddedUser | None = None) -> ftypes.User:
     database = get_database()
     cursor = database.cursor(dictionary=True)
 
@@ -44,8 +44,14 @@ def add_user(_user: ftypes.AddedUser | None = None):
     cursor.execute("INSERT INTO users (name, weight_kg, height_m, age, sex) "
                    "VALUES (%s, %s, %s, %s, %s);", params)
 
+    user_id = cursor.lastrowid
+
+    _user["id"] = user_id
+    _user: ftypes.User
+
     database.commit()
     cursor.close()
+    return _user
 
 
 @users_blueprint.route("/", methods=["GET", "POST"])
@@ -56,7 +62,7 @@ def users():
             response.data = get_users()
 
         elif request.method == "POST":
-            add_user()
+            response.data = add_user()
 
     except Exception as e:
         response.status = "error"

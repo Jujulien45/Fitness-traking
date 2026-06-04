@@ -175,7 +175,14 @@ users endpoints
     .. code-block:: json
 
         {
-          "data": None,
+          "data": {
+              "id": 1,
+              "age": 17,
+              "height_m": 195.0,
+              "name": "Julien",
+              "sex": "M" or "F",
+              "weight_kg": 80.0
+            },
           "status": "ok"
         }
 
@@ -209,10 +216,10 @@ users endpoints
         ftypes.User
 
 
-**/api/users/<int:user_id> (PUT)**
+**/api/users/<int:user_id> (POST)**
     Updates the data of the user with this user_id.
 
-    PUT request body's format and type:
+    POST request body's format and type:
 
     .. code-block:: json
 
