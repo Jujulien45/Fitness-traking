@@ -50,7 +50,7 @@ Run the server
 Firstly you need the mysql database running with xammp and the python venv.
 go to the root of the project and run::
 
-    python "Flask_API/main.py"
+    python -m Flask_API.main
 
 Hooray ! You just lauched the flask server with the api.
 
