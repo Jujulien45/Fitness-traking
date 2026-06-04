@@ -41,6 +41,8 @@ Install the dev_requirements if you want to modify the project::
 Mysql database
 --------------
 
+Name it Tracker_Fitness.
+
 Install xammp if not installed and import the "tracker_fitness.sql" database file.
 
 
