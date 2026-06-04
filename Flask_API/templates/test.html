@@ -1,55 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>test</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta charset="UTF-8" />
+  <title>Fitness Tracker API Test Suite</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 5px; }
+    #log { white-space: pre-wrap; background: #111; color: #0f0; padding: 10px; height: 500px; overflow: auto; }
+    .btn { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    .ok { color: lime; }
+    .err { color: red; }
+  </style>
 </head>
 <body>
-    <script>
-        async function postData(data, url="http://localhost:5000/api/users")
-        {
-            let init = {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(data),
-              };
-            const response = await fetch(url, init);
-            const result = response.json()
-            console.log(result);
-            return result;
-        }
 
+<h1>Fitness Tracker API Test Suite</h1>
 
-        async function getData(url="http://localhost:5000/api/users")
-        {
-            const response = await fetch(url);
-            const result = response.json()
-            console.log(result);
-            return result;
-        }
+<button class="btn" onclick="runAllTests()">Run Full Test Suite</button>
+<button class="btn" onclick="clearLog()">Clear Log</button>
 
+<div id="log"></div>
 
-        async function putData(data, url="http://localhost:5000/api/users/5")
-        {
-            let init = {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(data),
-              };
-            const response = await fetch(url, init);
-            const result = response.json()
-            console.log(result);
-            return result;
-        }
-        data = {name: "George", weight_kg: 70, height_m: 185, age: 17, sex: "M"};
+<script>
+const BASE_URL = "http://localhost:5000"; // CHANGE THIS
 
-        // postData(data);
-        getData().then((response) => {
-            response.data[0].weight_kg += 1;
-            const url = `http://localhost:5000/api/users/${response.data[0].id}`
-            putData(response.data[0], url);
-        });
-    </script>
+let USERS = [];
+let SESSION_TYPES = [];
+
+function log(msg, type="") {
+  const el = document.getElementById("log");
+  el.innerHTML += (type === "err" ? `<span class="err">${msg}</span>` :
+                  type === "ok" ? `<span class="ok">${msg}</span>` :
+                  msg) + "\n";
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearLog() {
+  document.getElementById("log").innerHTML = "";
+}
+
+async function request(path, options = {}) {
+  const res = await fetch(BASE_URL + path, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+  const data = await res.json();
+  return data;
+}
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randFloat(min, max) {
+  return (Math.random() * (max - min) + min).toFixed(2);
+}
+
+/* --------------------------
+   SEED DATA
+-------------------------- */
+
+async function createUsers() {
+  log("Creating 10 users...");
+
+  const names = ["Alex", "Jordan", "Sam", "Taylor", "Chris", "Morgan", "Jamie", "Casey", "Riley", "Drew"];
+
+  for (let i = 0; i < 10; i++) {
+    const payload = {
+      name: names[i],
+      age: rand(18, 45),
+      height_m: randFloat(1.55, 2.00),
+      weight_kg: randFloat(55, 100),
+      sex: Math.random() > 0.5 ? "M" : "F"
+    };
+
+    const res = await request("/api/users", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    if (res.status === "ok") {
+      log(`✔ Created user ${payload.name}`, "ok");
+    } else {
+      log(`✖ Failed to create user ${payload.name}`, "err");
+    }
+  }
+
+  const all = await request("/api/users");
+  USERS = all.data;
+  log(`Total users fetched: ${USERS.length}`);
+}
+
+async function fetchSessionTypes() {
+  log("Fetching session types...");
+  const res = await request("/api/sessions/types");
+  SESSION_TYPES = res.data;
+  log(`Session types loaded: ${SESSION_TYPES.length}`, "ok");
+}
+
+/* --------------------------
+   SEED SESSIONS
+-------------------------- */
+
+async function createSessions() {
+  log("Creating sessions (~20 per user)...");
+
+  for (const user of USERS) {
+    for (let i = 0; i < 20; i++) {
+      const type = SESSION_TYPES[rand(0, SESSION_TYPES.length - 1)];
+
+      const payload = {
+        user_id: user.id,
+        type: type.name,
+        duration_min: rand(5, 120),
+        met: type.met,
+        date: new Date(Date.now() - rand(0, 1000000000)).toISOString().slice(0, 19).replace("T", " ")
+      };
+
+      const res = await request(`/api/sessions?user_id=${user.id}`, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status !== "ok") {
+        log(`✖ Session failed for user ${user.id}`, "err");
+      }
+    }
+
+    log(`✔ Sessions created for user ${user.id}`, "ok");
+  }
+}
+
+/* --------------------------
+   TEST ENDPOINTS
+-------------------------- */
+
+async function testCoreEndpoints() {
+  log("Testing core endpoints...");
+
+  // /
+  try {
+    const res = await fetch(BASE_URL + "/");
+    log(`GET / -> ${res.status}`, "ok");
+  } catch {
+    log("GET / failed", "err");
+  }
+
+  // README
+  const readme = await fetch(BASE_URL + "/api/README");
+  log(`GET /api/README -> ${readme.status}`, "ok");
+}
+
+async function testUsersEndpoints() {
+  log("Testing /api/users endpoints...");
+
+  // GET all users
+  let res = await request("/api/users");
+  log(`GET /api/users -> ${res.data.length} users`, "ok");
+
+  const user = USERS[0];
+
+  // GET single user
+  res = await request(`/api/users/${user.id}`);
+  log(`GET /api/users/${user.id} -> ${res.status}`, "ok");
+
+  // PUT update user
+  res = await request(`/api/users/${user.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      name: user.name + "_updated",
+      weight_kg: 70,
+      height_m: 1.75,
+      age: 30,
+      sex: "M"
+    })
+  });
+
+  log(`PUT /api/users/${user.id} -> ${res.status}`, "ok");
+
+  // stats
+  res = await request(`/api/users/${user.id}/stats`);
+  log(`GET stats -> ${res.data.length} records`, "ok");
+
+  // BMI history
+  res = await request(`/api/users/${user.id}/bmi_history`);
+  log(`GET BMI history -> ${res.data.length} records`, "ok");
+}
+
+async function testSessionsEndpoints() {
+  log("Testing sessions endpoints...");
+
+  const user = USERS[0];
+
+  let res = await request(`/api/sessions?user_id=${user.id}`);
+  log(`GET sessions user ${user.id} -> ${res.data.length}`, "ok");
+
+  // POST session test
+  const type = SESSION_TYPES[0];
+
+  res = await request(`/api/sessions?user_id=${user.id}`, {
+    method: "POST",
+    body: JSON.stringify({
+      user_id: user.id,
+      type: type.name,
+      duration_min: 30,
+      met: type.met,
+      date: "2026-06-01 10:00:00"
+    })
+  });
+
+  log(`POST session -> ${res.status}`, "ok");
+}
+
+/* --------------------------
+   RUN ALL
+-------------------------- */
+
+async function runAllTests() {
+  clearLog();
+
+  log("=== STARTING TEST SUITE ===");
+
+  await testCoreEndpoints();
+
+  await fetchSessionTypes();
+
+  await createUsers();
+
+  await createSessions();
+
+  await testUsersEndpoints();
+
+  await testSessionsEndpoints();
+
+  log("=== TEST SUITE COMPLETE ===");
+}
+
+</script>
+
 </body>
 </html>

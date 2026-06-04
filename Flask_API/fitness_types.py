@@ -59,11 +59,11 @@ BmiHistory = list[BmiData]
 def matches_typeddict(data: dict, td_class) -> bool:
     hints = get_type_hints(td_class)
 
-    for key, expected_type in hints.items():
-        if key not in data:
-            return False
+    if not isinstance(data, dict):
+        return False
 
-        if not isinstance(data[key], expected_type):
+    for key in hints:
+        if key not in data:
             return False
 
     return True

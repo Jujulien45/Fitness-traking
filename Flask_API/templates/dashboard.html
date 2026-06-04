@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+    <style>
+        body {
+            margin: 20%;
+        }
+    </style>
+</head>
+<body>
+    <label for="user">User:</label>
+    <select id="user"></select>
+    <canvas id="minPerDay"></canvas>
+    <canvas id="activity"></canvas>
+    <canvas id="bmi"></canvas>
+    <script>
+        const minutes_ctx = document.getElementById('minPerDay');
+        const minutes_chart_data = {
+            type: 'bar',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'time spent (minutes)',
+                data: [],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          }
+        const activity_ctx = document.getElementById('activity');
+        const activity_chart_data = {
+            type: 'doughnut',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'time spent (minutes)',
+                data: [],
+                backgroundColor: [],
+                hoverOffset: 4
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          }
+        const bmi_ctx = document.getElementById('bmi');
+        const bmi_chart_data = {
+            type: 'line',
+            data: {
+              labels: [],
+              datasets: [{
+                label: 'Bmi history',
+                data: [],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: false
+                }
+              }
+            }
+          }
+
+        const minutes_chart = new Chart(minutes_ctx, minutes_chart_data);
+        const activity_chart = new Chart(activity_ctx, activity_chart_data);
+        const bmi_chart = new Chart(bmi_ctx, bmi_chart_data);
+
+
+
+        async function getUsers()
+        {
+            const response = await fetch("http://localhost:5000/api/users");
+            const result = response.json()
+            console.log(result);
+            return result;
+        }
+
+        function updateUsers() {
+            let selectedUserId = select.value;
+            select.innerText = "";
+            users.forEach(user => {
+                const option = document.createElement("option");
+                option.value = user.id;
+                option.textContent = user.name;
+                select.appendChild(option);
+            });
+            select.value = selectedUserId;
+        }
+
+        const select = document.getElementById("user");
+
+        const users = [];// The pointer to the array is constant not the array itself
+        function updateSelectUsers() {
+            getUsers().then((response) => {
+                users.length = 0;
+                response.data.forEach((user) => {
+                    users.push(user)
+                });
+                updateUsers();
+                updateGraphs();
+            })
+        }
+        setInterval(function(){updateSelectUsers();}, 5000);
+        updateSelectUsers();
+
+
+
+
+
+
+        async function getSessions(user_id, url = "http://localhost:5000/api/sessions")
+        {
+            const response = await fetch(url + '?user_id=' + user_id);
+            const result = response.json()
+            console.log(result);
+            return result;
+        }
+        async function getUser(user_id, added_path = "", url = "http://localhost:5000/api/users/")
+        {
+            const response = await fetch(url + user_id + added_path);
+            const result = await response.json()
+            console.log(result);
+            return result;
+        }
+
+
+        function generateColors(count) {
+            const colors = [];
+
+            for (let i = 0; i < count; i++) {
+                colors.push(`hsl(${i * 360 / count}, 70%, 60%)`);
+            }
+
+            return colors;
+        }
+
+
+        function updateGraphs() {
+            getSessions(select.value).then((response) =>
+            {
+                var data = [];
+                var labels = [];
+                response.data.forEach(session => {
+                    var sliced_date = session.date.slice(0, 10);
+                    if (labels.includes(sliced_date)) {
+                        data[data.length - 1] += session.duration_min
+                    } else {
+                        labels.push(sliced_date);
+                        data.push(session.duration_min)
+                    }
+                });
+                minutes_chart_data.data.labels = labels;
+                minutes_chart_data.data.datasets[0].data = data;
+                minutes_chart.update()
+            });
+
+
+            getUser(select.value, "/stats").then((response) => {
+                var data = [];
+                var labels = [];
+                response.data.forEach((type) => {
+                    data.push(type.total_min);
+                    labels.push(type.type);
+                });
+                activity_chart_data.data.datasets[0].data = data;
+                activity_chart_data.data.labels = labels;
+                activity_chart_data.data.datasets[0].backgroundColor = generateColors(response.data.length);
+                activity_chart.update();
+            })
+
+
+            getUser(select.value, "/bmi_history").then((response) => {
+                var data = [];
+                var labels = [];
+                response.data.forEach((bmi) => {
+                    data.push(bmi.bmi);
+                    labels.push(bmi.date);
+                });
+                bmi_chart_data.data.datasets[0].data = data;
+                bmi_chart_data.data.labels = labels;
+                bmi_chart.update();
+            })
+        }
+        setInterval(function(){
+            updateGraphs()
+            }, 5000);
+
+        select.addEventListener("change", (event) => {
+            updateGraphs();
+        })
+
+    </script>
+</body>
+</html>

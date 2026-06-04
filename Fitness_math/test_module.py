@@ -1,6 +1,7 @@
 from math import isclose
 from Fitness_math import fmath
 from Flask_API.endpoints.sessions import get_session, post_session
+from Flask_API.endpoints.users import get_users, add_user
 import Flask_API.fitness_types as ftypes
 from random import randint
 import random
@@ -70,6 +71,28 @@ def test_save_session_roundtrip():
             test_done = True
     if not test_done:
         assert False
+
+def test_save_user_roundtrip():
+    test_done = False
+
+    added_user: ftypes.AddedUser = {
+        "name": ''.join(random.choices(string.ascii_letters, k=10)),
+        "weight_kg": randint(50, 100),
+        "height_m": randint(140, 210) / 100,
+        "age": randint(13, 60),
+        "sex": random.choice(['M', 'F'])
+    }
+    add_user(added_user.copy())
+    _users: list[ftypes.User] = get_users()
+    for user in _users:
+        del user["id"]
+        user: ftypes.AddedUser
+        if user == add_user:
+            test_done = True
+    if not test_done:
+        assert False
+
+test_save_user_roundtrip()
 
 """
 def test_weekly_stats_aggregation():

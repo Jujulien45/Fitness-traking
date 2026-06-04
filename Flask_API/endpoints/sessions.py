@@ -19,8 +19,8 @@ def post_session(session: ftypes.AddedSession | None = None):
     if session is None:
         session: dict = request.get_json()
 
-        if ftypes.matches_typeddict(session, ftypes.AddedSession):
-            raise ValueError(f"Did not match the expected AddedSession format, value: {session}")
+        #if ftypes.matches_typeddict(session, ftypes.AddedSession):
+        #    raise ValueError(f"Did not match the expected AddedSession format, value: {session}")
     session: ftypes.AddedSession
 
     cursor.execute(
@@ -65,7 +65,7 @@ def get_session(user_id: int = -1) -> list[ftypes.Session]:
         if user_id is None:
             raise ValueError("The '/api/sessions' GET request needs a user_id as a query url parameter.")
 
-    cursor.execute("SELECT * FROM sessions WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT * FROM sessions WHERE user_id = %s ORDER BY date", (user_id,))
     sessions: list[ftypes.SessionDatetime] = cursor.fetchall()
     for session in sessions:
         session["date"] = get_datetime_str(session["date"])

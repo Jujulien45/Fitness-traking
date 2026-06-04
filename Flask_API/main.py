@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, abort
+from flask import Flask, send_from_directory, abort, render_template
 import os
 from Flask_API.endpoints.users import users_blueprint
 from Flask_API.endpoints.sessions import sessions_blueprint
@@ -9,7 +9,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Welcome to the fitness tracker. if you want to use this api go to \"/api/README.html\"."
+    return render_template('index.html')
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/favicon.ico')
 def favicon():
