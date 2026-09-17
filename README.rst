@@ -2,6 +2,21 @@ Fitness traking
 ===============
 This project aims to make an app to track fitness progress
 
+Showcase
+--------
+
+Javascript dashboard:
+.. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/dahsboard.png
+  :alt: dashboard
+
+winforms data history:
+.. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/history.png
+  :alt: history
+
+winforms statistics.
+.. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/stats.png
+  :alt: stats
+
 
 API docs
 --------
