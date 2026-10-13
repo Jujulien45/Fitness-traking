@@ -1,6 +1,7 @@
 Fitness traking
 ===============
-This project aims to make an app to track fitness progress
+This project aims to make an app to track fitness progress. It uses python/flask and a dll in C for math in the server, it uses a mysql database and there are two UI one to visualise data on graphs in JavaScript and the other one is a winforms app written in C# to modify and create accounts.
+This app works but keep in mind that it's a learning project so I won't come back to improve it and it's pretty bad at doing it's job.
 
 Showcase
 --------
