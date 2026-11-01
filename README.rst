@@ -8,6 +8,7 @@ Showcase
 --------
 
 Javascript dashboard:
+![alt text](https://github.com/Jujulien45/Fitness-traking/images/dahsboard.png)
 .. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/dahsboard.png
   :alt: dashboard
 
