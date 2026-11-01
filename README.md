@@ -7,17 +7,17 @@ Also the C# interface has been mostly written by IA, I still understand it thoug
 ## Showcase
 
 Javascript dashboard:
-![alt text](https://github.com/Jujulien45/Fitness-traking/tree/main/images/dahsboard.png)
+![alt text](https://github.com/Jujulien45/Fitness-traking/blob/main/images/dashboard.png)
 .. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/dahsboard.png
   :alt: dashboard
 
 winforms data history:
-![alt text](https://github.com/Jujulien45/Fitness-traking/tree/main/images/history.png)
+![alt text](https://github.com/Jujulien45/Fitness-traking/blob/main/images/history.png)
 .. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/history.png
   :alt: history
 
 winforms statistics.
-![alt text](https://github.com/Jujulien45/Fitness-traking/tree/main/images/stats.png)
+![alt text](https://github.com/Jujulien45/Fitness-traking/blob/main/images/stats.png)
 .. image:: https://raw.githubusercontent.com/Jujulien45/Fitness-traking/tree/main/images/stats.png
   :alt: stats
 
